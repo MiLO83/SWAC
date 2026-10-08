@@ -109,4 +109,36 @@ $('micStart').onclick=async()=>{
 $('micStop').onclick=()=>{stopMic();$('audioStatus').textContent='Microphone stopped.'};
 window.addEventListener('pagehide',()=>{stopMic();if(context)context.close()});
 })();
+</script><section style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px"><h2>FSK tone detector — experimental</h2><p class="muted">Listen for the strongest of the four SWAC frequencies. This is frequency detection, not packet decoding yet.</p><div class="panel"><button id="fskListen">Listen for FSK tones</button><button id="fskStop" disabled>Stop FSK detector</button></div><p id="fskStatus" role="status">Detector idle</p></section>
+<script>
+(()=>{'use strict';
+let ac,stream,source,analyser,raf=0;
+const freqs=[900,1200,1500,1800],$=id=>document.getElementById(id);
+function stop(){
+ if(raf)cancelAnimationFrame(raf);raf=0;
+ if(source){source.disconnect();source=null}
+ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+ if(ac){ac.close();ac=null}
+ analyser=null;$('fskListen').disabled=false;$('fskStop').disabled=true;
+}
+$('fskListen').onclick=async()=>{
+ try{
+ if(!navigator.mediaDevices?.getUserMedia)throw Error('HTTPS microphone permission required');
+ ac=new (window.AudioContext||window.webkitAudioContext)();await ac.resume();
+ stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+ source=ac.createMediaStreamSource(stream);analyser=ac.createAnalyser();analyser.fftSize=8192;analyser.smoothingTimeConstant=.2;source.connect(analyser);
+ const spectrum=new Float32Array(analyser.frequencyBinCount);
+ $('fskListen').disabled=true;$('fskStop').disabled=false;
+ function tick(){
+ if(!analyser)return;analyser.getFloatFrequencyData(spectrum);
+ const energies=freqs.map(f=>{const bin=Math.round(f*analyser.fftSize/ac.sampleRate);let peak=-120;for(let j=Math.max(0,bin-2);j<=Math.min(spectrum.length-1,bin+2);j++)peak=Math.max(peak,spectrum[j]);return peak});
+ const max=Math.max(...energies),idx=energies.indexOf(max);
+ $('fskStatus').textContent=max>-55?'Detected: '+freqs[idx]+' Hz → symbol '+idx.toString(2).padStart(2,'0')+' ('+Math.round(max)+' dBFS)':'Listening — no strong FSK tone ('+Math.round(max)+' dBFS)';
+ raf=requestAnimationFrame(tick);
+ }tick();
+ }catch(e){stop();$('fskStatus').textContent='Detector error: '+e.message}
+};
+$('fskStop').onclick=()=>{stop();$('fskStatus').textContent='FSK detector stopped'};
+window.addEventListener('pagehide',stop);
+})();
 </script></body></html>
