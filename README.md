@@ -25,3 +25,9 @@ Choose project name `swac` if available. Cloudflare assigns the actual `*.pages.
 ## Security
 
 Treat audio-received content as untrusted. Stage and verify payloads before applying them; never auto-execute downloaded HTML/JavaScript.
+
+## Cloudflare Workers deployment
+
+This repository also supports Cloudflare Workers static assets via `wrangler.jsonc`.
+The public site is served from `public/`, preventing Git metadata and build artifacts from being uploaded as web assets.
+The connected Workers Builds pipeline can deploy new commits on `main` when automatic builds are enabled.
