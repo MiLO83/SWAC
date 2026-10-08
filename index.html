@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SWAC — Spherical Window Acoustic Computer</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif}body{margin:0;background:#0c1323;color:#eaf0ff}
+header,main,footer{max-width:900px;margin:auto;padding:20px}header{padding-bottom:4px}
+h1{margin-bottom:4px}small,.muted{color:#a9b9d6}canvas{display:block;width:100%;max-width:620px;aspect-ratio:1;background:#060b17;border:1px solid #344866;border-radius:14px;touch-action:none}
+button{background:#284c78;color:white;border:1px solid #6584b4;padding:10px 14px;border-radius:8px;margin:4px;cursor:pointer}
+.panel{display:flex;flex-wrap:wrap;gap:10px;align-items:center}output{font-variant-numeric:tabular-nums}a{color:#91c5ff}
+</style></head><body>
+<header><h1>SWAC</h1><p>Spherical Window Acoustic Computer</p><small>OpenAI ChatGPT / Miles Cameron Johnston</small></header>
+<main><p class="muted">256 × 256 spherical memory window. Acoustic v0.3 integration and adaptive v0.4 negotiation are pending.</p>
+<canvas id="sphere" width="620" height="620" aria-label="Interactive spherical memory window"></canvas>
+<div class="panel"><button id="seed">Generate sample memory</button><button id="clear">Clear validity</button><button id="export">Export memory</button><output id="status"></output></div>
+<p class="muted">Drag to rotate the sphere. Each cell stores a full 0–255 byte value; validity is tracked separately. This prototype does not transmit or receive audio.</p>
+</main><footer><a href="https://github.com/MiLO83/SWAC">Source on GitHub</a></footer>
+<script>
+'use strict';
+const N=256, mem=new Uint8Array(N*N),valid=new Uint8Array(N*N);
+const canvas=document.querySelector('#sphere'),ctx=canvas.getContext('2d'),status=document.querySelector('#status');
+let yaw=0,pitch=0,drag=false,px=0,py=0;
+function render(){
+ const w=canvas.width,h=canvas.height,r=Math.min(w,h)*.44,cx=w/2,cy=h/2;
+ const img=ctx.createImageData(w,h),data=img.data;
+ const sy=Math.sin(yaw),cyaw=Math.cos(yaw),sp=Math.sin(pitch),cp=Math.cos(pitch);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+ const dx=(x-cx)/r,dy=(cy-y)/r,rr=dx*dx+dy*dy,k=(y*w+x)*4;
+ if(rr>1){data[k]=7;data[k+1]=13;data[k+2]=27;data[k+3]=255;continue}
+ let vx=dx,vy=dy,vz=Math.sqrt(1-rr);
+ const yy=cp*vy-sp*vz,zz=sp*vy+cp*vz;vy=yy;vz=zz;
+ const xx=cyaw*vx+sy*vz;vz=-sy*vx+cyaw*vz;vx=xx;
+ const lon=Math.atan2(vx,vz),lat=Math.asin(Math.max(-1,Math.min(1,vy)));
+ const ix=Math.min(255,Math.floor((lon/(2*Math.PI)+.5)*N));
+ const iy=Math.min(255,Math.floor((lat/Math.PI+.5)*N));
+ const i=iy*N+ix,a=mem[i]/255,light=.35+.65*Math.sqrt(1-rr);
+ data[k]=valid[i]?(25+170*a)*light:20;
+ data[k+1]=valid[i]?(55+120*a)*light:30;
+ data[k+2]=valid[i]?(160-70*a)*light:43;
+ data[k+3]=255;
+ }
+ ctx.putImageData(img,0,0);
+}
+function update(){let n=0;for(const v of valid)n+=v?1:0;status.textContent=n.toLocaleString()+' / 65,536 populated';render()}
+document.querySelector('#seed').onclick=()=>{for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=y*N+x,v=Math.sin(x*.08)*Math.cos(y*.07)+Math.sin((x+y)*.035);mem[i]=Math.max(0,Math.min(255,Math.round((v+2)*60)));valid[i]=v>.2?1:0}update()};
+document.querySelector('#clear').onclick=()=>{valid.fill(0);update()};
+document.querySelector('#export').onclick=()=>{const bytes=new Uint8Array(4+mem.length+valid.length);bytes.set([83,87,51,0]);bytes.set(mem,4);bytes.set(valid,4+mem.length);const url=URL.createObjectURL(new Blob([bytes],{type:'application/octet-stream'}));const a=document.createElement('a');a.href=url;a.download='swac-memory.sw3';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+canvas.onpointerdown=e=>{drag=true;px=e.clientX;py=e.clientY;canvas.setPointerCapture(e.pointerId)};
+canvas.onpointerup=()=>drag=false;
+canvas.onpointermove=e=>{if(!drag)return;yaw+=(e.clientX-px)*.012;pitch=Math.max(-1.5,Math.min(1.5,pitch+(e.clientY-py)*.012));px=e.clientX;py=e.clientY;render()};
+update();
+</script></body></html>
