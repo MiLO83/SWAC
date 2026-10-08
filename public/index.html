@@ -149,19 +149,19 @@ window.addEventListener('pagehide',stop);
 <p id="aplStatus" role="status">APL ready. Only predefined, validated protocol descriptions are accepted.</p>
 <p class="muted" id="aplPeers">No peer profiles saved</p>
 </section><script src="./apl.js" defer></script><section aria-label="Capability teaching laboratory" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
-<h2>SWAC v0.5 — Teach a ColecoVision</h2>
-<p class="muted">A voice-capable teacher can express a tiny vocabulary as validated, Z80-targeted semantic lessons. This browser demonstration simulates the student: it does not run on a real ColecoVision, listen for speech, or transfer executable code.</p>
+<h2>SWAC v0.5 — Generate ColecoVision Z80 code</h2>
+<p class="muted">A capable device generates actual Z80 instructions for a ColecoVision. This demo creates a six-byte subroutine that writes a command ID to RAM and returns. A compatible cartridge/loader and receiving program are required to use it on hardware. No console is connected.</p>
 <label for="teachWord">Lesson</label>
 <select id="teachWord" style="background:#091526;color:white;padding:10px;border-radius:8px"><option>HELLO</option><option>START</option><option>LEFT</option><option>RIGHT</option><option>STOP</option></select>
-<div class="panel"><button id="teachCreate">Teach selected word</button><button id="teachImport">Validate / import lesson JSON</button><button id="teachClear">Forget lessons</button></div>
-<textarea id="teachDocument" rows="8" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px" aria-label="Teaching lesson JSON" placeholder="Teach a word to inspect its portable lesson"></textarea>
-<p id="teachKnown" class="muted">No vocabulary learned yet.</p>
-<label for="teachInput">Try text recognized by a more capable device:</label>
+<div class="panel"><button id="teachCreate">Generate Z80 program</button><button id="teachImport">Validate / import Z80 program</button><button id="teachClear">Clear saved programs</button></div>
+<textarea id="teachDocument" rows="8" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px" aria-label="Generated Z80 program JSON" placeholder="Generate a program to inspect Z80 instructions and machine bytes"></textarea>
+<p id="teachKnown" class="muted">No programs saved yet.</p>
+<label for="teachInput">Optional teacher-side text command (not interpreted by ColecoVision):</label>
 <input id="teachInput" value="Hello ColecoVision" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px">
-<button id="teachTest">Test learned vocabulary</button><p id="teachOutput" role="status">Awaiting simulated command.</p>
+<button id="teachTest">Show matching generated code</button><p id="teachOutput" role="status">Awaiting simulated command.</p>
 <h3>Transport discovery — policy simulator</h3>
 <p class="muted">Demonstrates which connection types SWAC may consider. It does not scan Wi-Fi, establish WebRTC, or use mobile data.</p>
 <label><input id="teachMetered" type="checkbox"> Permit metered internet candidates (simulation only)</label>
 <button id="teachDiscover">Evaluate known transports</button><p id="teachDiscovery" class="muted">No evaluation yet.</p>
-<p id="teachStatus" role="status">Ready to teach safely. Lessons are saved in this browser's local storage.</p>
+<p id="teachStatus" role="status">Ready to generate bounded Z80 code. Programs are saved in this browser.</p>
 </section><script src="./teaching.js" defer></script></body></html>
