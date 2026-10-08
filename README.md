@@ -23,6 +23,7 @@ The third layer is the experiment: **the responder speaks the requester's native
 
 - **Spherical memory:** Drag to rotate a visualization of 256 × 256 bytes (65,536 cells) with separate validity flags. Seed, clear, and export memory.
 - **Acoustic hardware tests:** Play four sine tones (900, 1200, 1500, 1800 Hz), test microphone levels, and detect the strongest FSK tone. These tests do **not** decode data packets.
+- **4-FSK v1.0 (experimental):** A new acoustic packet modem sends and listens for short messages (up to 12 UTF-8 bytes) using four tones at 900/1200/1500/1800 Hz, 5 symbols/s, a fixed preamble and sync, and CRC-16/CCITT-FALSE. The **Packet self-test** validates encoding/decoding and corruption rejection without audio. Two-device microphone decoding and synchronization have not yet been verified. No automatic ACK/retransmission yet.
 - **WebRTC v0.8:** Manual offer/answer signaling for direct peer-to-peer browser data channels, with capability descriptions, HELLO/NOD/ACK challenge echo, text messages, delivery receipts and three-attempt timeouts. Works best on the same local network; no STUN/TURN service is configured. Connections are not authenticated, and network costs are not automatically detected. 
 - **Morse v0.9 discovery gate:** A receiver starts in bootstrap listening mode. Full Morse messaging is **locked until it acoustically decodes the literal phrase `MORSE CODE`**. A separate button transmits that phrase in Morse. A local no-audio self-test does **not** unlock it. After activation, the browser accepts `SW MESSAGE CRC16` frames and enables its message-send control. The 750 Hz / 120 ms detector is experimental and hardware-dependent. The phrase is a discovery signal, **not authentication**.
 - **APL v0.4:** Export and import validated `SWAC-APL/1` capability JSON, select a compatible 4-FSK or Morse mode, and remember peers locally. This is **manual copy/paste**, not over-the-air negotiation.
@@ -67,6 +68,16 @@ The ColecoVision does **not** need speech recognition. The teacher might use voi
 
 The activation gate is a **capability-discovery convention**, not a security boundary: anyone nearby could transmit the phrase. It does not verify peer identity or authorize remote commands. The self-test validates text encoding and CRC logic, **not** actual acoustic reception. No audio packet executes received code. Morse is a fallback candidate, not a claim that every device has a microphone or speaker.
 
+## Test the 4-FSK packet modem
+
+1. Open SWAC and find **SWAC v1.0 — 4-FSK packet modem**.
+2. Leave `HELLO` in the message box and press **Packet self-test**. Expect `PASS` for round-trip and corruption rejection.
+3. On a second device in a quiet room, press **Listen for packets** and grant microphone access.
+4. On the first device press **Send 4-FSK packet**. The approximately 16-second transmission should finish; the listener should display `CRC PASS — HELLO` if acoustic synchronization succeeds.
+5. If it fails, keep screens awake, move devices closer, and adjust volume. The receiver has fixed timing, no retransmission, no robust clock recovery, and no tested throughput guarantee.
+
+**Wire format:** 12 preamble symbols alternating 900 and 1800 Hz; 8 fixed sync symbols; one length byte; 12 payload bytes zero-padded; two CRC bytes. Each byte uses four 2-bit tone symbols, most significant first. CRC covers the length and padded payload. Nominal raw symbol bit rate is 10 bit/s, not application throughput. No remote program execution.
+
 ## Test direct browser-to-browser communication
 
 1. Open SWAC on two devices connected to the **same Wi-Fi network**. Find **v0.8 — Direct peer connection**.
@@ -92,6 +103,7 @@ After contact, devices can advertise other transports. **A transport is only a c
 | 256 × 256 spherical byte window | Working prototype |
 | Speaker/microphone hardware test | Implemented; hardware-dependent |
 | Four-tone FSK frequency detection | Experimental |
+| Bounded 4-FSK packet transmitter, receiver, CRC and offline self-test | Implemented; real-device reception unverified |
 | Morse transmitter, tone-selective receiver, CRC frame and self-test | Implemented; hardware testing needed |
 | Receive acoustic MORSE CODE to unlock Morse messaging | Implemented; hardware testing needed |
 | Morse advertised in APL capability profiles | Implemented |
@@ -102,7 +114,7 @@ After contact, devices can advertise other transports. **A transport is only a c
 | Hardware-agnostic NLA request/answer demo for Z80, AVR, browser | Implemented; offline templates |
 | Metered-transport policy demonstration | Implemented, simulation |
 | Automated **acoustic** HELLO/NOD/ACK, ACK/retry and recovery | Not implemented |
-| Real acoustic lesson transfer and protocol scanning | Not implemented |
+| Robust acoustic lesson transfer, retransmission and protocol scanning | Not implemented |
 | Hosted WebRTC signaling, STUN/TURN and automatic transport failover | Not implemented |
 | ColecoVision cartridge/loader and hardware execution | Not implemented |
 
@@ -113,6 +125,7 @@ After contact, devices can advertise other transports. **A transport is only a c
 - `public/index.html` — static site and interactive UI.
 - `public/apl.js` — constrained APL profiles (Morse and FSK) and local peer store.
 - `public/morse.js` — audible Morse frames, microphone decoder and CRC self-test.
+- `public/fsk-packets.js` — bounded 4-FSK frame codec, audio sender, experimental receiver and corruption self-test.
 - `public/webrtc.js` — manual signaling, direct data channel, HELLO/NOD/ACK, text receipts and retry logic.
 - `public/teaching.js` — bounded Z80 code generator, saved templates, and metered policy demo.
 - `public/nla.js` — target profiles, bounded request/answer examples, local verification and request history.
@@ -126,7 +139,7 @@ Cloudflare Pages is a separate hosting option. If configured, its static output 
 ## Remaining engineering milestones (also shown on the site)
 
 - Calibrate the existing tone-selective Morse detector and timing on real phones and PCs; add noise rejection, activation timeouts and a reliable reset.
-- Build and test a framed 4-FSK modem with symbol synchronization, CRC, retransmission and throughput measurements.
+- Verify and improve the new framed 4-FSK modem on actual phones/PCs, add symbol-clock recovery, CRC-based ACK/retransmission and throughput measurements.
 - Implement automatic acoustic handshake with turn-taking, randomized backoff and protocol fallback.
 - Add authenticated peer identities and safe, permissioned native-code transfer and target-side validation.
 - Add hosted signaling and optional TURN relay with explicit network budgets and consent; integrate measured transport switching.
