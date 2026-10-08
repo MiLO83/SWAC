@@ -9,7 +9,7 @@ button{background:#284c78;color:white;border:1px solid #6584b4;padding:10px 14px
 .panel{display:flex;flex-wrap:wrap;gap:10px;align-items:center}output{font-variant-numeric:tabular-nums}a{color:#91c5ff}
 </style></head><body>
 <header><h1>SWAC</h1><p>Spherical Window Acoustic Computer</p><small>OpenAI ChatGPT / Miles Cameron Johnston</small></header>
-<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a hardware-agnostic native-language Q&A laboratory. Full acoustic packet transfer and autonomous transport switching are not yet implemented.</p>
+<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a hardware-agnostic native-language Q&A laboratory. Morse frame transfer is experimental; FSK packet transfer and autonomous transport switching are not yet implemented.</p>
 <canvas id="sphere" width="620" height="620" aria-label="Interactive spherical memory window"></canvas>
 <div class="panel"><button id="seed">Generate sample memory</button><button id="clear">Clear validity</button><button id="export">Export memory</button><output id="status"></output></div>
 <p class="muted">Drag to rotate the sphere. Each cell stores a full 0–255 byte value; validity is tracked separately. This prototype does not transmit or receive audio.</p>
@@ -172,4 +172,14 @@ window.addEventListener('pagehide',stop);
 <div class="panel"><button id="nlaDescribe">Describe target</button><button id="nlaAsk">ASK → ANSWER</button><button id="nlaVerify">Verify answer</button></div>
 <textarea id="nlaDocument" rows="14" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px" aria-label="Native language request and answer JSON"></textarea>
 <p id="nlaStatus" role="status">Ready for a local request.</p><p id="nlaHistory" class="muted">No local requests yet.</p>
-</section><script src="./nla.js" defer></script></body></html>
+</section><script src="./nla.js" defer></script><section aria-label="Morse acoustic protocol" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
+<h2>SWAC v0.7 — Morse acoustic protocol</h2>
+<p class="muted">Real audio Morse transmitter and experimental microphone decoder: 750 Hz tone, 120 ms dot, standard dot/dash timing, SW frame marker and CRC-16/CCITT-FALSE. Use two devices, one sending and one listening. This is not an authenticated connection or automatic handshake.</p>
+<label for="morseMessage">Message (1–20 letters, numbers or spaces)</label>
+<input id="morseMessage" value="HELLO" maxlength="20" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px">
+<div class="panel"><button id="morseSelfTest">Self-test (no audio)</button><button id="morseSend">Send Morse audio</button><button id="morseListen">Start Morse receiver</button><button id="morseStop" disabled>Stop receiver</button></div>
+<p id="morseStatus" role="status">Ready. Start with the no-audio self-test.</p>
+<p id="morseEncoded" class="muted" style="overflow-wrap:anywhere">No frame encoded yet.</p>
+<p id="morseSignal" class="muted">Microphone idle.</p>
+<p id="morseReceived" style="overflow-wrap:anywhere">No verified frame yet.</p>
+</section><script src="./morse.js" defer></script></body></html>
