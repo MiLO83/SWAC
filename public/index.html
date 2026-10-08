@@ -9,7 +9,7 @@ button{background:#284c78;color:white;border:1px solid #6584b4;padding:10px 14px
 .panel{display:flex;flex-wrap:wrap;gap:10px;align-items:center}output{font-variant-numeric:tabular-nums}a{color:#91c5ff}
 </style></head><body>
 <header><h1>SWAC</h1><p>Spherical Window Acoustic Computer</p><small>OpenAI ChatGPT / Miles Cameron Johnston</small></header>
-<main><p class="muted">256 × 256 spherical memory window. Acoustic v0.3 integration and adaptive v0.4 negotiation are pending.</p>
+<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a simulated capability-teaching laboratory. Full acoustic packet transfer and autonomous transport switching are not yet implemented.</p>
 <canvas id="sphere" width="620" height="620" aria-label="Interactive spherical memory window"></canvas>
 <div class="panel"><button id="seed">Generate sample memory</button><button id="clear">Clear validity</button><button id="export">Export memory</button><output id="status"></output></div>
 <p class="muted">Drag to rotate the sphere. Each cell stores a full 0–255 byte value; validity is tracked separately. This prototype does not transmit or receive audio.</p>
@@ -148,4 +148,20 @@ window.addEventListener('pagehide',stop);
 <textarea id="aplDocument" rows="9" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px" aria-label="APL capability JSON"></textarea>
 <p id="aplStatus" role="status">APL ready. Only predefined, validated protocol descriptions are accepted.</p>
 <p class="muted" id="aplPeers">No peer profiles saved</p>
-</section><script src="./apl.js" defer></script></body></html>
+</section><script src="./apl.js" defer></script><section aria-label="Capability teaching laboratory" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
+<h2>SWAC v0.5 — Teach a ColecoVision</h2>
+<p class="muted">A voice-capable teacher can express a tiny vocabulary as validated, Z80-targeted semantic lessons. This browser demonstration simulates the student: it does not run on a real ColecoVision, listen for speech, or transfer executable code.</p>
+<label for="teachWord">Lesson</label>
+<select id="teachWord" style="background:#091526;color:white;padding:10px;border-radius:8px"><option>HELLO</option><option>START</option><option>LEFT</option><option>RIGHT</option><option>STOP</option></select>
+<div class="panel"><button id="teachCreate">Teach selected word</button><button id="teachImport">Validate / import lesson JSON</button><button id="teachClear">Forget lessons</button></div>
+<textarea id="teachDocument" rows="8" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px" aria-label="Teaching lesson JSON" placeholder="Teach a word to inspect its portable lesson"></textarea>
+<p id="teachKnown" class="muted">No vocabulary learned yet.</p>
+<label for="teachInput">Try text recognized by a more capable device:</label>
+<input id="teachInput" value="Hello ColecoVision" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px">
+<button id="teachTest">Test learned vocabulary</button><p id="teachOutput" role="status">Awaiting simulated command.</p>
+<h3>Transport discovery — policy simulator</h3>
+<p class="muted">Demonstrates which connection types SWAC may consider. It does not scan Wi-Fi, establish WebRTC, or use mobile data.</p>
+<label><input id="teachMetered" type="checkbox"> Permit metered internet candidates (simulation only)</label>
+<button id="teachDiscover">Evaluate known transports</button><p id="teachDiscovery" class="muted">No evaluation yet.</p>
+<p id="teachStatus" role="status">Ready to teach safely. Lessons are saved in this browser's local storage.</p>
+</section><script src="./teaching.js" defer></script></body></html>
