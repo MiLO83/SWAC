@@ -10,7 +10,7 @@ function unpack(s){if(s.length!==20+(capacity+3)*4)throw Error('Wrong symbol cou
 const count=20+(capacity+3)*4;let context=null,stream=null,source=null,analyser=null,interval=null,lastSymbol=-1,lastTransition=0,phase=0,observed=[],listening=false,sending=false;
 function stop(){listening=false;if(interval){clearInterval(interval);interval=null}if(source){source.disconnect();source=null}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}if(context){context.close();context=null}analyser=null;$('packetListen').disabled=false;$('packetStop').disabled=true}
 function receive(sym,now){if(sym<0)return;
-if(lastSymbol!==sym){lastSymbol=sym;lastTransition=now;if(!observed.length){observed=[sym];phase=now+symbolMs/2;return}}
+if(lastSymbol!==sym){lastSymbol=sym;lastTransition=now;if(!observed.length){phase=now+symbolMs/2;return}}
 if(now>=phase){const steps=Math.min(2,Math.floor((now-phase)/symbolMs)+1);for(let j=0;j<steps;j++){observed.push(sym);phase+=symbolMs}if(observed.length>count+10)observed.shift();
 if(observed.length>=count){const recent=observed.slice(-count);try{const text=unpack(recent);$('packetReceived').textContent='CRC PASS — '+text;status('FSK frame received with valid CRC. No commands executed.');observed=[];lastSymbol=-1}catch{}}
 }}
