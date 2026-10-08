@@ -9,7 +9,7 @@ button{background:#284c78;color:white;border:1px solid #6584b4;padding:10px 14px
 .panel{display:flex;flex-wrap:wrap;gap:10px;align-items:center}output{font-variant-numeric:tabular-nums}a{color:#91c5ff}
 </style></head><body>
 <header><h1>SWAC</h1><p>Spherical Window Acoustic Computer</p><small>OpenAI ChatGPT / Miles Cameron Johnston</small></header>
-<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a hardware-agnostic native-language Q&A laboratory. Morse frame transfer is experimental; FSK packet transfer and autonomous transport switching are not yet implemented. WebRTC manual peer signaling is experimental.</p>
+<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a hardware-agnostic native-language Q&A laboratory. Morse frame transfer is experimental; FSK packet send/receive is experimental; autonomous transport switching is not yet implemented. WebRTC manual peer signaling is experimental.</p>
 <canvas id="sphere" width="620" height="620" aria-label="Interactive spherical memory window"></canvas>
 <div class="panel"><button id="seed">Generate sample memory</button><button id="clear">Clear validity</button><button id="export">Export memory</button><output id="status"></output></div>
 <p class="muted">Drag to rotate the sphere. Each cell stores a full 0–255 byte value; validity is tracked separately. This prototype does not transmit or receive audio.</p>
@@ -192,13 +192,22 @@ window.addEventListener('pagehide',stop);
 <textarea id="rtcRemote" rows="4" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px"></textarea>
 <div class="panel"><button id="rtcHello">Send HELLO</button><input id="rtcText" value="HELLO WORLD" maxlength="200" aria-label="Peer message" style="background:#091526;color:white;padding:10px"><button id="rtcSend">Send text</button></div>
 <p id="rtcStatus" role="status">Disconnected.</p><pre id="rtcLog" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre>
-</section><script src="./webrtc.js" defer></script><section aria-label="SWAC engineering milestones" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
+</section><script src="./webrtc.js" defer></script><section aria-label="Four frequency packet modem" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
+<h2>SWAC v1.0 — 4-FSK packet modem</h2>
+<p class="muted">Experimental real audio packet sender and microphone receiver. Four tones (900/1200/1500/1800 Hz), 5 symbols/s, 2 bits/symbol, fixed preamble and sync, 12-byte maximum payload, CRC-16. Start with the no-audio self-test; two-device acoustic reception is unverified.</p>
+<label for="packetText">Short message (1–12 UTF-8 bytes)</label>
+<input id="packetText" value="HELLO" maxlength="12" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px">
+<div class="panel"><button id="packetTest">Packet self-test</button><button id="packetSend">Send 4-FSK packet</button><button id="packetListen">Listen for packets</button><button id="packetStop" disabled>Stop receiver</button></div>
+<p id="packetStatus" role="status">Ready for packet self-test.</p>
+<p id="packetSignal" class="muted">Receiver idle.</p>
+<p id="packetReceived" style="overflow-wrap:anywhere">No packet received.</p>
+</section><script src="./fsk-packets.js" defer></script><section aria-label="SWAC engineering milestones" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
 <h2>SWAC engineering milestones</h2>
 <p class="muted">Current progress and next testable deliverables. A code commit does not establish real-world reliability.</p>
 <ul>
 <li><strong>Experimental:</strong> Morse discovery gate — acoustic MORSE CODE phrase required; CRC frame messaging, hardware verification pending.</li>
 <li><strong>Experimental:</strong> Manual WebRTC peer signaling, HELLO/NOD/ACK challenge echo, message receipts and retries.</li>
-<li><strong>Pending:</strong> Framed 4-FSK packet transfer, synchronization, CRC, retransmission and measured throughput.</li>
+<li><strong>Experimental:</strong> Framed 4-FSK acoustic send/receive with CRC and offline self-test; real-device synchronization and reliability unverified, retransmission pending.</li>
 <li><strong>Pending:</strong> Automatic acoustic HELLO/NOD/ACK, adaptive timing, collision avoidance and fallback.</li>
 <li><strong>Pending:</strong> Authenticated peer identity and authorized, sandboxed native-code delivery.</li>
 <li><strong>Pending:</strong> Hosted signaling, optional TURN relay and metered-network budgets.</li>
