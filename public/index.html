@@ -9,7 +9,7 @@ button{background:#284c78;color:white;border:1px solid #6584b4;padding:10px 14px
 .panel{display:flex;flex-wrap:wrap;gap:10px;align-items:center}output{font-variant-numeric:tabular-nums}a{color:#91c5ff}
 </style></head><body>
 <header><h1>SWAC</h1><p>Spherical Window Acoustic Computer</p><small>OpenAI ChatGPT / Miles Cameron Johnston</small></header>
-<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a simulated capability-teaching laboratory. Full acoustic packet transfer and autonomous transport switching are not yet implemented.</p>
+<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a hardware-agnostic native-language Q&A laboratory. Full acoustic packet transfer and autonomous transport switching are not yet implemented.</p>
 <canvas id="sphere" width="620" height="620" aria-label="Interactive spherical memory window"></canvas>
 <div class="panel"><button id="seed">Generate sample memory</button><button id="clear">Clear validity</button><button id="export">Export memory</button><output id="status"></output></div>
 <p class="muted">Drag to rotate the sphere. Each cell stores a full 0–255 byte value; validity is tracked separately. This prototype does not transmit or receive audio.</p>
@@ -164,4 +164,12 @@ window.addEventListener('pagehide',stop);
 <label><input id="teachMetered" type="checkbox"> Permit metered internet candidates (simulation only)</label>
 <button id="teachDiscover">Evaluate known transports</button><p id="teachDiscovery" class="muted">No evaluation yet.</p>
 <p id="teachStatus" role="status">Ready to generate bounded Z80 code. Programs are saved in this browser.</p>
-</section><script src="./teaching.js" defer></script></body></html>
+</section><script src="./teaching.js" defer></script><section aria-label="Native Language Assistance" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
+<h2>SWAC v0.6 — Native Language Assistance</h2>
+<p class="muted">Any device can ASK for help and receive an answer formatted for its own capabilities. Choose an example target to simulate DISCOVER → DESCRIBE → ASK → ANSWER → VERIFY → LEARN. This is an offline template demonstration, not a connection to physical hardware or an AI code generator.</p>
+<div class="panel"><label for="nlaTarget">Target</label><select id="nlaTarget" style="background:#091526;color:white;padding:10px;border-radius:8px"><option value="z80">Z80 / ColecoVision example</option><option value="avr">AVR microcontroller example</option><option value="browser">Web browser example</option></select>
+<label for="nlaTask">Question</label><select id="nlaTask" style="background:#091526;color:white;padding:10px;border-radius:8px"><option value="identify">Identify yourself</option><option value="store">How do I store a value?</option><option value="greet">How can I greet?</option></select></div>
+<div class="panel"><button id="nlaDescribe">Describe target</button><button id="nlaAsk">ASK → ANSWER</button><button id="nlaVerify">Verify answer</button></div>
+<textarea id="nlaDocument" rows="14" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px" aria-label="Native language request and answer JSON"></textarea>
+<p id="nlaStatus" role="status">Ready for a local request.</p><p id="nlaHistory" class="muted">No local requests yet.</p>
+</section><script src="./nla.js" defer></script></body></html>
