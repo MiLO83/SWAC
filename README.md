@@ -2,32 +2,32 @@
 
 **OpenAI ChatGPT / Miles Cameron Johnston**
 
-> **HELLO → NOD → ACK → LEARN → TEACH.** Start with a language both devices understand, discover what else they can do, and teach useful capabilities without assuming identical hardware.
+> **DISCOVER → DESCRIBE → ASK → ANSWER → VERIFY → LEARN.** Any device can request help from another device and receive an answer expressed in a representation it can actually use.
 
 **Live Workers site:** https://swac.robohouse.workers.dev/  
 **Source:** https://github.com/MiLO83/SWAC
 
 ## The big idea
 
-A more capable computer **writes Z80 machine code for a ColecoVision**. The ColecoVision need not recognize speech, parse a high-level lesson, or understand the teacher's language. The teacher targets the student's CPU and hardware interfaces; a compatible cartridge/loader transfers and executes the resulting program with user authorization.
+**SWAC is hardware-agnostic.** A simple computer, sensor, microcontroller, game console, or browser can ask a more capable peer for help. The responder adapts its answer to the requester's capabilities: native machine code, structured instructions, or ordinary data. ColecoVision is just one illustrative target, not a platform requirement. The requester does not need speech recognition or an AI model.
 
 SWAC distinguishes three layers:
 
 1. **Transport discovery:** How can we communicate? Acoustic, local network, or permissioned internet.
 2. **Protocol learning:** Which framing, modulation, and speeds can both ends support?
-3. **Capability teaching:** What code can the teacher generate for the student's actual instruction set and available hardware?
+3. **Native-language assistance (NLA):** What answer can the responder generate for the requester's instruction set, data formats, memory budget, and available hardware?
 
-The third layer is the experiment: **the teacher writes software that runs on the student.**
+The third layer is the experiment: **the responder speaks the requester's native computational language**. Sometimes that means writing software; other times the best answer is data or a bounded command sequence.
 
 ## Try the site
 
 - **Spherical memory:** Drag to rotate a visualization of 256 × 256 bytes (65,536 cells) with separate validity flags. Seed, clear, and export memory.
 - **Acoustic hardware tests:** Play four sine tones (900, 1200, 1500, 1800 Hz), test microphone levels, and detect the strongest FSK tone. These tests do **not** decode data packets.
 - **APL v0.4:** Export and import validated `SWAC-APL/1` capability JSON, select a compatible 4-FSK mode, and remember peers locally. This is **manual copy/paste**, not over-the-air negotiation.
-- **Code generation lab v0.5:** Choose a demonstration command and generate a **real six-byte Z80 subroutine**. Inspect the assembly and machine bytes inside `SWAC-Z80/1` JSON. A separate program would need to interpret the command ID. This browser does not execute the bytes or connect to a console.
+- **NLA v0.6 (new):** Select Z80, AVR, or browser examples and issue one of three predefined questions. The local demonstrator produces a target-specific answer, checks its template and size, and remembers a short request history. **No external peer, dynamic AI generation, or physical hardware is involved.**\n- **Code generation lab v0.5:** Choose a demonstration command and generate a **real six-byte Z80 subroutine**. Inspect the assembly and machine bytes inside `SWAC-Z80/1` JSON. A separate program would need to interpret the command ID. This browser does not execute the bytes or connect to a console.
 - **Transport policy simulator:** Evaluate acoustic, local WebRTC, and internet WebRTC *candidates*. Metered internet is blocked by default. **No network negotiation or data usage occurs from this simulator.**
 
-### What the ColecoVision demonstration actually generates
+### Native-language request/answer format\n\nThe v0.6 browser lab creates `SWAC-DESCRIBE/1`, `SWAC-ASK/1`, and `SWAC-ANSWER/1` JSON documents. The device description includes its architecture, available capabilities, reply format, and memory budget. Requests name a task; responses contain a target-specific payload. The local verifier accepts only exact known templates. The simulated `LEARN` step records request history, not new executable protocols.\n\nThe three example targets intentionally differ: Z80 returns six-byte machine-code examples, AVR returns structured adapter steps, and browsers receive JSON data. **There is no universal requirement to receive executable code.** Real implementations will need device discovery, trustworthy hardware descriptions, protocol framing, transport, and safe loading or interpretation.\n\n### What the ColecoVision demonstration actually generates
 
 For the sample **HELLO** operation, SWAC generates this Z80 subroutine:
 
@@ -63,7 +63,7 @@ After contact, devices can advertise other transports. **A transport is only a c
 | Speaker/microphone hardware test | Implemented; hardware-dependent |
 | Four-tone FSK frequency detection | Experimental |
 | APL capability JSON exchange and local peer storage | Implemented, manual |
-| Bounded Z80 machine-code generation and local persistence | Implemented; not executed |
+| Bounded Z80 machine-code generation and local persistence | Implemented; not executed |\n| Hardware-agnostic NLA request/answer demo for Z80, AVR, browser | Implemented; offline templates |
 | Metered-transport policy demonstration | Implemented, simulation |
 | Framed acoustic HELLO/NOD/ACK with CRC and retries | Not implemented |
 | Real acoustic lesson transfer and protocol scanning | Not implemented |
@@ -76,7 +76,7 @@ After contact, devices can advertise other transports. **A transport is only a c
 
 - `public/index.html` — static site and interactive UI.
 - `public/apl.js` — constrained APL profiles and local peer store.
-- `public/teaching.js` — bounded Z80 code generator, saved templates, and metered policy demo.
+- `public/teaching.js` — bounded Z80 code generator, saved templates, and metered policy demo.\n- `public/nla.js` — target profiles, bounded request/answer examples, local verification and request history.
 - `wrangler.jsonc` — Cloudflare Workers static assets from `./public`.
 - `index.html` at repository root — earlier standalone prototype, **not** the currently served page.
 
@@ -90,4 +90,4 @@ Keep a safe, known bootstrap. Validate size, schema, ranges, and resource budget
 
 ---
 
-*Imagine a modern computer writing native software for a 1982 game console — then safely delivering it in a language the hardware already understands.* 🎮
+*Every device can ask. Every answer should fit the device that asked.* 🎮
