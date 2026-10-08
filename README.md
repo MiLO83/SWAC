@@ -23,7 +23,8 @@ The third layer is the experiment: **the responder speaks the requester's native
 
 - **Spherical memory:** Drag to rotate a visualization of 256 × 256 bytes (65,536 cells) with separate validity flags. Seed, clear, and export memory.
 - **Acoustic hardware tests:** Play four sine tones (900, 1200, 1500, 1800 Hz), test microphone levels, and detect the strongest FSK tone. These tests do **not** decode data packets.
-- **APL v0.4:** Export and import validated `SWAC-APL/1` capability JSON, select a compatible 4-FSK mode, and remember peers locally. This is **manual copy/paste**, not over-the-air negotiation.
+- **Morse v0.7:** Press **Self-test** to verify a text → Morse → text round trip and CRC without audio. On two devices, start the Morse receiver on one, then transmit a message on the other. The receiver uses microphone amplitude and fixed timing; room noise, speaker level and browser scheduling may affect decoding. The wire frame is `SW MESSAGE CRC16`, encoded in ITU-style Morse at 750 Hz, 120 ms dots. This is a testable experimental audio path, not yet a verified peer-to-peer connection or automatic handshake.
+- **APL v0.4:** Export and import validated `SWAC-APL/1` capability JSON, select a compatible 4-FSK or Morse mode, and remember peers locally. This is **manual copy/paste**, not over-the-air negotiation.
 - **NLA v0.6 (new):** Select Z80, AVR, or browser examples and issue one of three predefined questions. The local demonstrator produces a target-specific answer, checks its template and size, and remembers a short request history. **No external peer, dynamic AI generation, or physical hardware is involved.**\n- **Code generation lab v0.5:** Choose a demonstration command and generate a **real six-byte Z80 subroutine**. Inspect the assembly and machine bytes inside `SWAC-Z80/1` JSON. A separate program would need to interpret the command ID. This browser does not execute the bytes or connect to a console.
 - **Transport policy simulator:** Evaluate acoustic, local WebRTC, and internet WebRTC *candidates*. Metered internet is blocked by default. **No network negotiation or data usage occurs from this simulator.**
 
@@ -47,6 +48,16 @@ The ColecoVision does **not** need speech recognition. The teacher might use voi
 
 `SWAC-Z80/1` currently describes one of five exact, bounded machine-code templates. Imported examples must match a supported template; arbitrary received machine code is not accepted or executed. Future generated binaries should be checked for target compatibility, memory safety, allowed I/O operations, bounded execution, and authenticated origin before hardware deployment.
 
+## How to test Morse tonight
+
+1. Open the [SWAC site](https://swac.robohouse.workers.dev/) on a device and find **SWAC v0.7 — Morse acoustic protocol**.
+2. Leave `HELLO` in the message box. Press **Self-test (no audio)**. Expect `CRC PASS`.
+3. Open the same page on a **second device** and press **Start Morse receiver**; allow microphone permission. Keep the devices a short distance apart, with moderate speaker volume.
+4. On the first device press **Send Morse audio** and wait for it to finish. The receiving device should show the decoded frame and `CRC PASS` if audio detection succeeds.
+5. If the receiver misses symbols, reduce background noise, adjust speaker volume, and keep both screens active. Browser power-saving and echo suppression may interfere. This experimental decoder has not been verified on your devices.
+
+The self-test validates text encoding and CRC logic, **not** actual acoustic reception. No audio packet executes received code. Morse is a fallback candidate, not a claim that every device has a microphone or speaker.
+
 ## Discovery and the Shop-Vac Rule
 
 SWAC should try known, previously successful protocols first, but preserve an immutable bootstrap. A robust **HELLO / NOD / ACK** exchange should include a random challenge, message framing, error detection, timeout/retry, and peer authentication when trust matters. Merely receiving plausible bytes is not proof of a compatible or trusted peer.
@@ -62,10 +73,12 @@ After contact, devices can advertise other transports. **A transport is only a c
 | 256 × 256 spherical byte window | Working prototype |
 | Speaker/microphone hardware test | Implemented; hardware-dependent |
 | Four-tone FSK frequency detection | Experimental |
+| Morse tone transmitter, microphone decoder, CRC frame and self-test | Implemented; hardware testing needed |
+| Morse advertised in APL capability profiles | Implemented |
 | APL capability JSON exchange and local peer storage | Implemented, manual |
 | Bounded Z80 machine-code generation and local persistence | Implemented; not executed |\n| Hardware-agnostic NLA request/answer demo for Z80, AVR, browser | Implemented; offline templates |
 | Metered-transport policy demonstration | Implemented, simulation |
-| Framed acoustic HELLO/NOD/ACK with CRC and retries | Not implemented |
+| Automated acoustic HELLO/NOD/ACK, ACK/retry and recovery | Not implemented |
 | Real acoustic lesson transfer and protocol scanning | Not implemented |
 | WebRTC signaling, link testing, automatic failover | Not implemented |
 | ColecoVision cartridge/loader and hardware execution | Not implemented |
@@ -75,7 +88,8 @@ After contact, devices can advertise other transports. **A transport is only a c
 ## Repository and deployment
 
 - `public/index.html` — static site and interactive UI.
-- `public/apl.js` — constrained APL profiles and local peer store.
+- `public/apl.js` — constrained APL profiles (Morse and FSK) and local peer store.
+- `public/morse.js` — audible Morse frames, microphone decoder and CRC self-test.
 - `public/teaching.js` — bounded Z80 code generator, saved templates, and metered policy demo.\n- `public/nla.js` — target profiles, bounded request/answer examples, local verification and request history.
 - `wrangler.jsonc` — Cloudflare Workers static assets from `./public`.
 - `index.html` at repository root — earlier standalone prototype, **not** the currently served page.
