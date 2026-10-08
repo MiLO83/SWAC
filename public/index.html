@@ -9,7 +9,7 @@ button{background:#284c78;color:white;border:1px solid #6584b4;padding:10px 14px
 .panel{display:flex;flex-wrap:wrap;gap:10px;align-items:center}output{font-variant-numeric:tabular-nums}a{color:#91c5ff}
 </style></head><body>
 <header><h1>SWAC</h1><p>Spherical Window Acoustic Computer</p><small>OpenAI ChatGPT / Miles Cameron Johnston</small></header>
-<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a hardware-agnostic native-language Q&A laboratory. Morse frame transfer is experimental; FSK packet transfer and autonomous transport switching are not yet implemented.</p>
+<main><p><a href="https://github.com/MiLO83/SWAC/blob/main/README.md" target="_blank" rel="noopener">📖 Read the SWAC README — architecture, teaching, safety &amp; deployment</a></p><p class="muted">256 × 256 spherical memory window. Acoustic tests, manual APL capability exchange, and a hardware-agnostic native-language Q&A laboratory. Morse frame transfer is experimental; FSK packet transfer and autonomous transport switching are not yet implemented. WebRTC manual peer signaling is experimental.</p>
 <canvas id="sphere" width="620" height="620" aria-label="Interactive spherical memory window"></canvas>
 <div class="panel"><button id="seed">Generate sample memory</button><button id="clear">Clear validity</button><button id="export">Export memory</button><output id="status"></output></div>
 <p class="muted">Drag to rotate the sphere. Each cell stores a full 0–255 byte value; validity is tracked separately. This prototype does not transmit or receive audio.</p>
@@ -182,4 +182,14 @@ window.addEventListener('pagehide',stop);
 <p id="morseEncoded" class="muted" style="overflow-wrap:anywhere">No frame encoded yet.</p>
 <p id="morseSignal" class="muted">Microphone idle.</p>
 <p id="morseReceived" style="overflow-wrap:anywhere">No verified frame yet.</p>
-</section><script src="./morse.js" defer></script></body></html>
+</section><script src="./morse.js" defer></script><section aria-label="Direct peer connection" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
+<h2>SWAC v0.8 — Direct peer connection (WebRTC)</h2>
+<p class="muted">Two browsers can exchange capabilities, HELLO/NOD/ACK challenges, text messages, and delivery receipts over a direct data channel. Manual copy/paste signaling: no Cloudflare relay, no public STUN/TURN, and no guarantee across different networks. WebRTC is not automatically metered-free; only connect when you approve the network costs.</p>
+<div class="panel"><button id="rtcOffer">1. Create offer (device A)</button><button id="rtcAnswer">2. Create answer (device B)</button><button id="rtcAccept">3. Accept answer (device A)</button><button id="rtcClose">Disconnect</button></div>
+<label for="rtcLocal">My signaling text (copy to the other device)</label>
+<textarea id="rtcLocal" rows="4" readonly style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px"></textarea>
+<label for="rtcRemote">Other device's signaling text (paste here)</label>
+<textarea id="rtcRemote" rows="4" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px"></textarea>
+<div class="panel"><button id="rtcHello">Send HELLO</button><input id="rtcText" value="HELLO WORLD" maxlength="200" aria-label="Peer message" style="background:#091526;color:white;padding:10px"><button id="rtcSend">Send text</button></div>
+<p id="rtcStatus" role="status">Disconnected.</p><pre id="rtcLog" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre>
+</section><script src="./webrtc.js" defer></script></body></html>
