@@ -173,11 +173,11 @@ window.addEventListener('pagehide',stop);
 <textarea id="nlaDocument" rows="14" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px" aria-label="Native language request and answer JSON"></textarea>
 <p id="nlaStatus" role="status">Ready for a local request.</p><p id="nlaHistory" class="muted">No local requests yet.</p>
 </section><script src="./nla.js" defer></script><section aria-label="Morse acoustic protocol" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
-<h2>SWAC v0.7 — Morse acoustic protocol</h2>
-<p class="muted">Real audio Morse transmitter and experimental microphone decoder: 750 Hz tone, 120 ms dot, standard dot/dash timing, SW frame marker and CRC-16/CCITT-FALSE. Use two devices, one sending and one listening. This is not an authenticated connection or automatic handshake.</p>
+<h2>SWAC v0.9 — Morse acoustic discovery gate</h2>
+<p class="muted">Real audio Morse transmitter and experimental microphone decoder: 750 Hz tone, 120 ms dot, standard dot/dash timing, SW frame marker and CRC-16/CCITT-FALSE. Use two devices, one sending and one listening. The receiver starts in bootstrap mode: it must acoustically decode MORSE CODE to enable full Morse messaging. This phrase does not authenticate the sender.</p><p id="morseGate" role="status">MORSE LOCKED — listen for acoustic MORSE CODE</p>
 <label for="morseMessage">Message (1–20 letters, numbers or spaces)</label>
 <input id="morseMessage" value="HELLO" maxlength="20" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px">
-<div class="panel"><button id="morseSelfTest">Self-test (no audio)</button><button id="morseSend">Send Morse audio</button><button id="morseListen">Start Morse receiver</button><button id="morseStop" disabled>Stop receiver</button></div>
+<div class="panel"><button id="morseSelfTest">Self-test (no audio)</button><button id="morseActivate">Transmit MORSE CODE activation</button><button id="morseSend" disabled>Send Morse audio</button><button id="morseListen">Start Morse receiver</button><button id="morseStop" disabled>Stop receiver</button></div>
 <p id="morseStatus" role="status">Ready. Start with the no-audio self-test.</p>
 <p id="morseEncoded" class="muted" style="overflow-wrap:anywhere">No frame encoded yet.</p>
 <p id="morseSignal" class="muted">Microphone idle.</p>
@@ -192,4 +192,16 @@ window.addEventListener('pagehide',stop);
 <textarea id="rtcRemote" rows="4" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px"></textarea>
 <div class="panel"><button id="rtcHello">Send HELLO</button><input id="rtcText" value="HELLO WORLD" maxlength="200" aria-label="Peer message" style="background:#091526;color:white;padding:10px"><button id="rtcSend">Send text</button></div>
 <p id="rtcStatus" role="status">Disconnected.</p><pre id="rtcLog" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre>
-</section><script src="./webrtc.js" defer></script></body></html>
+</section><script src="./webrtc.js" defer></script><section aria-label="SWAC engineering milestones" style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
+<h2>SWAC engineering milestones</h2>
+<p class="muted">Current progress and next testable deliverables. A code commit does not establish real-world reliability.</p>
+<ul>
+<li><strong>Experimental:</strong> Morse discovery gate — acoustic MORSE CODE phrase required; CRC frame messaging, hardware verification pending.</li>
+<li><strong>Experimental:</strong> Manual WebRTC peer signaling, HELLO/NOD/ACK challenge echo, message receipts and retries.</li>
+<li><strong>Pending:</strong> Framed 4-FSK packet transfer, synchronization, CRC, retransmission and measured throughput.</li>
+<li><strong>Pending:</strong> Automatic acoustic HELLO/NOD/ACK, adaptive timing, collision avoidance and fallback.</li>
+<li><strong>Pending:</strong> Authenticated peer identity and authorized, sandboxed native-code delivery.</li>
+<li><strong>Pending:</strong> Hosted signaling, optional TURN relay and metered-network budgets.</li>
+<li><strong>Pending:</strong> Device-specific adapters and real-hardware tests across architectures.</li>
+</ul>
+</section></body></html>
