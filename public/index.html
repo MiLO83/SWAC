@@ -48,4 +48,65 @@ canvas.onpointerdown=e=>{drag=true;px=e.clientX;py=e.clientY;canvas.setPointerCa
 canvas.onpointerup=()=>drag=false;
 canvas.onpointermove=e=>{if(!drag)return;yaw+=(e.clientX-px)*.012;pitch=Math.max(-1.5,Math.min(1.5,pitch+(e.clientY-py)*.012));px=e.clientX;py=e.clientY;render()};
 update();
+</script><section aria-label="Acoustic hardware test" style="margin-top:24px;padding:16px;border:1px solid #344866;border-radius:12px">
+<h2>Acoustic hardware test</h2>
+<p class="muted">Test four FSK tones and microphone input before packet transfer. Use headphones or lower speaker volume to avoid feedback.</p>
+<div class="panel"><button id="toneTest">Play four test tones</button><button id="micStart">Start microphone test</button><button id="micStop" disabled>Stop microphone</button></div>
+<p id="audioStatus" role="status">Audio idle. No data is transmitted.</p>
+<meter id="micLevel" min="0" max="100" value="0" style="width:100%"></meter>
+</section>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+let context=null,stream=null,source=null,analyser=null,raf=0,testing=false;
+const frequencies=[900,1200,1500,1800];
+async function audioContext(){
+ if(!context||context.state==='closed')context=new (window.AudioContext||window.webkitAudioContext)();
+ await context.resume();return context;
+}
+$('toneTest').onclick=async()=>{
+ if(testing)return;testing=true;$('toneTest').disabled=true;
+ try{
+ const ac=await audioContext();const start=ac.currentTime+.08;
+ frequencies.forEach((frequency,i)=>{
+ const osc=ac.createOscillator(),gain=ac.createGain(),at=start+i*.38;
+ osc.type='sine';osc.frequency.value=frequency;
+ gain.gain.setValueAtTime(0,at);
+ gain.gain.linearRampToValueAtTime(.12,at+.025);
+ gain.gain.setValueAtTime(.12,at+.32);
+ gain.gain.linearRampToValueAtTime(0,at+.36);
+ osc.connect(gain).connect(ac.destination);osc.start(at);osc.stop(at+.38);
+ });
+ $('audioStatus').textContent='Playing 900, 1200, 1500, 1800 Hz test tones (no encoded data).';
+ await new Promise(resolve=>setTimeout(resolve,1700));
+ $('audioStatus').textContent='Tone test complete. Acoustic data transfer not yet implemented.';
+ }catch(e){$('audioStatus').textContent='Audio test failed: '+e.message}
+ finally{testing=false;$('toneTest').disabled=false}
+};
+function stopMic(){
+ if(raf)cancelAnimationFrame(raf);raf=0;
+ if(source){source.disconnect();source=null}
+ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+ analyser=null;$('micLevel').value=0;$('micStart').disabled=false;$('micStop').disabled=true;
+}
+$('micStart').onclick=async()=>{
+ try{
+ if(!navigator.mediaDevices?.getUserMedia)throw Error('Microphone access requires HTTPS and browser permission.');
+ const ac=await audioContext();
+ stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+ source=ac.createMediaStreamSource(stream);analyser=ac.createAnalyser();analyser.fftSize=2048;source.connect(analyser);
+ const samples=new Float32Array(analyser.fftSize);
+ $('micStart').disabled=true;$('micStop').disabled=false;
+ $('audioStatus').textContent='Microphone active: displaying incoming audio level only.';
+ const tick=()=>{
+ if(!analyser)return;analyser.getFloatTimeDomainData(samples);
+ let sum=0;for(const x of samples)sum+=x*x;
+ $('micLevel').value=Math.min(100,Math.sqrt(sum/samples.length)*250);
+ raf=requestAnimationFrame(tick);
+ };tick();
+ }catch(e){stopMic();$('audioStatus').textContent='Microphone unavailable: '+e.message}
+};
+$('micStop').onclick=()=>{stopMic();$('audioStatus').textContent='Microphone stopped.'};
+window.addEventListener('pagehide',()=>{stopMic();if(context)context.close()});
+})();
 </script></body></html>
