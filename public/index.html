@@ -141,4 +141,11 @@ $('fskListen').onclick=async()=>{
 $('fskStop').onclick=()=>{stop();$('fskStatus').textContent='FSK detector stopped'};
 window.addEventListener('pagehide',stop);
 })();
-</script></body></html>
+</script><section style="margin-top:20px;padding:16px;border:1px solid #344866;border-radius:12px">
+<h2>APL v0.4 — Protocol learning groundwork</h2>
+<p class="muted">Exchange capability descriptions between devices, identify compatible modulation settings, and remember peers locally. This does not yet send profiles acoustically or validate real-world throughput.</p>
+<div class="panel"><button id="aplExport">Show my capabilities</button><button id="aplImport">Import peer capabilities</button><button id="aplForget">Forget peers</button></div>
+<textarea id="aplDocument" rows="9" style="box-sizing:border-box;width:100%;background:#091526;color:#eaf0ff;border:1px solid #344866;border-radius:8px;padding:10px" aria-label="APL capability JSON"></textarea>
+<p id="aplStatus" role="status">APL ready. Only predefined, validated protocol descriptions are accepted.</p>
+<p class="muted" id="aplPeers">No peer profiles saved</p>
+</section><script src="./apl.js" defer></script></body></html>
